@@ -12,7 +12,10 @@ class FlyersController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // use the authentication on all pages listed below, except for show
+        // as we want all people to see the listed flyers
+        
+        $this->middleware('auth', ['except' => ['show']]);
     }
 
     /**
