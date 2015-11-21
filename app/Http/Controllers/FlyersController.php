@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-// use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-
 use App\Http\Requests\FlyerRequest;
 use App\Flyer;
+use App\Photo;
 
 class FlyersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
