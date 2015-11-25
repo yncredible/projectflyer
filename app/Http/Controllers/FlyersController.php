@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FlyerRequest;
 use App\Flyer;
 use App\Photo;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FlyersController extends Controller
 {
@@ -67,7 +68,7 @@ class FlyersController extends Controller
      */
     public function show($zip, $street)
     {
-        $flyer = Flyer::locatedAt($zip, $street)->first();
+        $flyer = Flyer::locatedAt($zip, $street);
 
         return view('flyers.show', compact('flyer'));
     }
@@ -79,17 +80,16 @@ class FlyersController extends Controller
             'photo' => 'required|mimes:jpg,jpeg,png'
         ]);
 
-        $file = $request->file('photo');
+        $photo = $this->makePhoto($request->file('photo'));
 
-        $name = time() . $file->getClientOriginalName();
+        Flyer::locatedAt($zip, $street)->addPhoto($photo);
+    }
 
-        $file->move('images/flyers', $name);
-
-        $flyer = Flyer::locatedAt($zip, $street)->first();
-
-        $flyer->photos()->create(['path' => "/images/flyers/{$name}"]);
-
-        return 'Done';
+    protected function makePhoto(UploadedFile $file)
+    {
+        // return Photo::fromForm($file)->store($file);
+        return Photo::named($file->getClientOriginalName())
+            ->move($file);
     }
 
     /**
